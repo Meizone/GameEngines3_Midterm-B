@@ -1,0 +1,39 @@
+Cited:
+
+Drag Drop Events:
+https://www.youtube.com/watch?v=p7akGCRgBLA
+https://forum.unity.com/threads/ibegindraghandler-idraghandler-ienddraghandler-script-attached-to-sprite-object.294168/
+https://forum.unity.com/threads/solved-trying-to-detect-a-drop-directly-on-the-canvas.522017/
+
+
+Scaling AnchorPosition to match Canvas Space:
+https://forum.unity.com/threads/recttransform-anchoredposition-relative-to-its-canvas.397924/
+https://forum.unity.com/threads/how-to-scale-move-a-recttransforms-so-that-it-match-exactly-another-recttransforms.398767/
+
+Getting an AnchoredPosition to match relative to another parents RectTransform
+https://forum.unity.com/threads/find-anchoredposition-of-a-recttransform-relative-to-another-recttransform.330560/
+
+Pivot Modification:
+https://www.youtube.com/watch?v=NsUJDqEY8tE
+
+
+GridSystem:
+- Code Monkey Grid System Playlist
+https://youtu.be/waEsGu--9P8
+https://www.youtube.com/watch?v=BGr-7GZJNXg
+https://youtu.be/dulosHPl82A
+https://youtu.be/fxaDBE71UHA
+
+
+
+Referenced Documentation:
+https://docs.unity3d.com/ScriptReference/RectTransformUtility.ScreenPointToLocalPointInRectangle.html
+https://docs.unity3d.com/2020.1/Documentation/Manual/UIE-Events-DragAndDrop.html
+https://docs.unity3d.com/2019.1/Documentation/ScriptReference/EventSystems.EventSystem.html
+https://docs.unity3d.com/2018.3/Documentation/ScriptReference/EventSystems.PointerEventData.html
+https://docs.unity3d.com/2018.3/Documentation/ScriptReference/EventSystems.PointerEventData-pointerDrag.html
+https://docs.unity3d.com/2019.1/Documentation/ScriptReference/EventSystems.EventTrigger.OnDrop.html
+https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnMouseDrag.html
+
+
+
