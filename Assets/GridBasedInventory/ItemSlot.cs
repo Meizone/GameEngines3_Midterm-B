@@ -1,3 +1,31 @@
+/*
+Nathan Nguyen
+101268067
+Grid-Based Inventory
+
+ItemSlot
+
+Description:
+Slot Behaviours, DragDrop behaviours
+Slotted Definition in ItemGridGeneration.Grid Array
+
+
+Canvas Space -> Slotted Space 
+45* -> 45/ItemDimension
+
+Canvas space to deal with AnchorPositioning
+Slotted to deal with SlottedGrid
+
+
+
+The ItemGridArray gives the ItemSlot Script access to the "Grid" 2 dimension array that takes Intergers
+The intergers will be either 0 or 1, 
+
+0: Unslotted the Item may be slotted
+1 : Slotted the item may not be slotted ontop of
+*/
+
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,23 +44,26 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
 
     [HideInInspector]
+    // Check if the item is currently in the Chest for parenting reasons
     public bool InChest = false;
 
     [HideInInspector]
     public Vector2 currentPosition; // For anchorPosition settings Works in Canvas Space (45*)
-    public Vector2 previousPosition;
-    public ItemGridGenerator slot;
+    public Vector2 previousPosition; // For anchorPosition settings Works in Canvas Space (45*)
+    public ItemGridGenerator slot; // Holds a reference to the Grid Array from the ItemGridGenerator
 
     void Start()
     {
         // Resize items given current anchors
         foreach (RectTransform AnchoredPosition in transform)
         {
+            // Multiply the current game object Horizontal and Vertical axis with the item dimensions to expand the object dynamically depending on size
             AnchoredPosition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, item.Dimensions.x * AnchoredPosition.rect.width);
             AnchoredPosition.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, item.Dimensions.y * AnchoredPosition.rect.height);
 
             foreach (RectTransform Icon in AnchoredPosition)
             {
+                // Multiply the Gameobject the same as the AnchoredPosition
                 Icon.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, item.Dimensions.x * Icon.rect.width);
                 Icon.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, item.Dimensions.y * Icon.rect.height);
                 // Set Icon image to the center of the "Slot"
@@ -40,27 +71,35 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             }
         }
 
+
+        // Find the Slot Game Object specific to the player inventory
         slot = GameObject.Find("Inventory_Grid").GetComponent<ItemGridGenerator>();
 
     }
 
 
+    // On begin Drag runs whenever the mouse begins a "Drag" event
     public void OnBeginDrag(PointerEventData eventData)
     {
         // Set the Old position and let the mouse Raycast go through the object.
         previousPosition = transform.GetComponent<RectTransform>().anchoredPosition;
-        oldPosition.x = (previousPosition.x / size.x);
-        oldPosition.y = (-previousPosition.y / size.y);
+        // Set the Slotted position so its easier to debug 
+        oldPosition.x = (previousPosition.x / size.x); // Divide the current position by the Size Vector2 
+        oldPosition.y = (-previousPosition.y / size.y); // To turn everything into "Slotted Space" 45* -> 1,2,3
+
+        // Turn BlockRayCasts to false to allow OnDrop actions from the Slot types
         GetComponent<CanvasGroup>().blocksRaycasts = false;
     }
 
+    // Runs whenever the Object is being currently dragged 
     public void OnDrag(PointerEventData eventData)
     {
         for (int x = 0; x < item.Dimensions.x; x++)
         {
             for (int y = 0; y < item.Dimensions.y; y++)
             {
-                // Set own spot before dropping to "Unslotted"
+                // Set own spot before dropping to "Unslotted" To allow the item to be dropped in its previous
+                // Position without Slot conflicts
                 slot.grid[(int)oldPosition.x + x, (int)oldPosition.y + y] = 0;
             }
         }
@@ -76,7 +115,7 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             #region PositionHandling
             /// <summary>
             /// Handle the Positioning of ItemObjects after Drag has ended and PointerIsOverGameObject
-            /// Check the Destination through variable "EndDrag" and convert it to World->CellSpace 45:1 and check
+            /// Check the Destination through variable "CurrentPosition" and convert it to World->CellSpace 45:1 and check
             /// for a Valid location between the Slots of the grid, After check if the Grid Array returns 0/1
             /// 1 for already Slotted - Return to previous location, 0 for Unslotted - Free to be slotted
             /// </summary>
@@ -99,7 +138,7 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
 
 
-            // Make Sure Item was Dropped within Slots In Own Inventory, In Anchored Chordinates
+            // Make Sure Item was Dropped within ChestSlot or ItemSlots In Own Both Inventories, In Anchored Chordinates
             // Subtract 1 to deal with the Grid starting at position 0
             // 
             if (((destinationSlot.x) + (item.Dimensions.x) - 1) < slot.GridMaxX // Make sure Destination X is less than Max Slot Y (Outside Right) 
@@ -107,8 +146,7 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             && ((destinationSlot.x)) >= 0 && destinationSlot.y >= 0) // Make sure Slot destination isn't Below 0 (Outside Left) (Outside Up)
             {
 
-
-                // Check through all the Slots based on the itemSize of the Item that it would Occupy
+                // Check through all the ChestSlot or ItemSlots based on the itemSize of the Item that it would Occupy
                 for (int x = 0; x < item.Dimensions.x; x++)
                 {
                     for (int y = 0; y < item.Dimensions.y; y++)
@@ -126,7 +164,6 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                         else
                         {
                             // Set transform back to previous location
-                            Debug.Log("Didnt Work");
                             transform.GetComponent<RectTransform>().anchoredPosition = previousPosition;
                             // Issue with Break, Setting sizeY and sizeX simply broke out of the for Statement more Consistantly
                             x = (int)item.Dimensions.x;
@@ -154,7 +191,7 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                     {
                         for (int y = 0; y < item.Dimensions.y; y++)
                         {
-                            // Change the previous Slot so that new items may be slotted
+                            // Change the previous Slot so that new items may be slotted (0)
                             slot.grid[(int)oldPosition.x + x, (int)oldPosition.y + y] = 0;
 
                         }
@@ -162,26 +199,34 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                     // Change the new position to be "Slotted"
                     for (int i = 0; i < newPositionCheck.Count; i++)
                     {
-                        // Change slot.grid array so that destination shows A Slotted Item
+                        // Change slot.grid array so that destination shows A Slotted Item(1)
                         slot.grid[(int)newPositionCheck[i].x, (int)newPositionCheck[i].y] = 1;
                     }
 
                     NewPosition = newPositionCheck[0]; // set new start position
                     transform.GetComponent<RectTransform>().anchoredPosition = new Vector2(NewPosition.x * size.x, -NewPosition.y * size.y);
                 }
-                else // Item "Was" Previously Slotted.
+                else // Item "Was" Previously Slotted (1). Or if Slotted was Equal to 0, In any case.
                 {
                     for (int x = 0; x < item.Dimensions.x; x++)
                     {
                         for (int y = 0; y < item.Dimensions.y; y++)
                         {
-                            slot.grid[(int)oldPosition.x + x, (int)oldPosition.y + y] = 1; //back to position 1;
+                            // Set Slot Grid Array to Slotted
+                            slot.grid[(int)oldPosition.x + x, (int)oldPosition.y + y] = 1; 
                         }
                     }
                 }
             }
 
-            // Handle if its being Slotted from just outside of the Inventory Range
+            /// <summary> Handle if its being Slotted from just outside of the Inventory Range
+            /// This is important because we want to also handle interactions
+            /// With other gamerObjects besides our Grid, Future Nathan may ask Why not just make this the base
+            /// If statement above and always check if its just outside the Grid Range,
+            /// We cannot because It will be out of the range of the Grid, and we deal with our Grid above, here
+            /// all we are doing is setting our old position back to slotted and moving our anchoredPosition back to 
+            /// our initial position
+            /// </summary>
             else if (((destinationSlot.x) + (item.Dimensions.x) - 1) <= slot.GridMaxX
             && ((destinationSlot.y) + (item.Dimensions.y) - 1) <= slot.GridMaxY
             && ((destinationSlot.x)) >= -1 && destinationSlot.y >= -1)
@@ -207,7 +252,10 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             /// <summary>
             /// We make a list of all hovered Objects and go through each of them, if we see
             /// that we are hovering our other "ChestSlots" we don't return our Object to 
-            /// the OriginPosition and we instead pass to our ChestSlot to handle the movement
+            /// the OriginPosition and we instead pass to our ChestSlot to handle the INITIAL movement
+            /// All of the Movement is still being done by the itemSlot because we changed the parent
+            /// the Canvas AnchoredPositions also change scope to the new parent objects which is a 
+            /// duplicate of our original inventory which allows us to use the same ItemSlot logic
             /// </summary>
 
             else // Still Over Game Object put Not Inventory Grid
@@ -217,7 +265,7 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                 List<GameObject> hoveredList = eventData.hovered;
                 foreach (var obj in hoveredList)
                 {
-                    // If object is over SlotTetris, Let SlotTetris OnDrop script work
+                    // If object is over ChestClone or the ItemSlotClone, Let The corosponding Slot OnDrop script work
                     if (obj.name == "ChestSlot(Clone)" || obj.name == "ItemSlot(Clone)")
                     {
                         onSlot = true;
@@ -228,7 +276,8 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                     // If its on any other object change position to its old position as per usual
                     this.transform.GetComponent<RectTransform>().anchoredPosition = previousPosition;
                 }
-                GetComponent<CanvasGroup>().blocksRaycasts = true; // Allow Raycasting
+                // Allow Raycasting so that the User may be able to click on this object once again
+                GetComponent<CanvasGroup>().blocksRaycasts = true; 
             }
 
 
@@ -237,7 +286,6 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         }
         else
         {
-            Debug.Log("Didnt Work");
             // Object was Dragged on not a game object, Send back to original location
             this.transform.GetComponent<RectTransform>().anchoredPosition = previousPosition;
         }
@@ -246,7 +294,7 @@ public class ItemSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
         #endregion PositionHandling
 
-        Debug.Log("drag Ended");
+        // Allow Raycasting so that the User may be able to click on this object once again
         GetComponent<CanvasGroup>().blocksRaycasts = true; // Allow Raycasting
     }
 

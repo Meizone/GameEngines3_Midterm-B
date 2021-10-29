@@ -1,3 +1,19 @@
+/*
+Nathan Nguyen
+101268067
+Grid-Based Inventory
+Chest Slot
+
+
+*NEW COMMENTS BELOW*
+Description:
+Handle Parenting "Chest" type ItemSlots and the Initial Movement only
+Because we are changing the parent our Canvas Scope has also changed which means 
+if the Canvas these slots are being put in are Identical the ItemSlot will be able to use 
+its same code to deal with the Movement Within the script
+*/
+
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,12 +23,17 @@ public class ChestSlot : MonoBehaviour, IDropHandler
 {
     //public Vector2 Offset = new Vector2(25,-25);
 
+   
     private ItemSlot itemSlot;
+
     public void OnDrop(PointerEventData eventData)
     {
-        
+
+        // Check if gameobject is not null *NEW*
         if(eventData.pointerDrag != null)
         {
+            // Check if the GameObject ItemSlot.InChest is false, If False set the parent of the Object to the Chest Inventory *NEW*
+            // And set its initial Position
             if (!eventData.pointerDrag.GetComponent<ItemSlot>().InChest)
             {
                 itemSlot = eventData.pointerDrag.GetComponent<ItemSlot>();

@@ -1,3 +1,23 @@
+/*
+Nathan Nguyen
+101268067
+Grid-Based Inventory
+ItemGridGenerator
+
+
+Description:
+Generate Grid Prefabs based on number of slots
+GridMaxX and GridMaxY has to be set individually by the user, This is due to 
+that Canvas being Static and not dynamic, The canvas will not expand to fit the users
+Inventory Size automatically as it added complexity 
+
+grid - Array of Intergers based on the GridMaxX and GridMaxY
+Will only be either one of two states
+0 - Unslotted
+1 - Slotted
+*/
+
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
