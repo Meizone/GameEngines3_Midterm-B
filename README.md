@@ -9,8 +9,10 @@ Thank you for taking the time to read this.
 
 Nathan Nguyen - 101268067
 
-UPDATED AS OF: 10/29/2021: 7:39AM EST Toronto Time
+UPDATED AS OF: 10/29/2021: 7:50AM EST Toronto Time
  - All Workcited, Readme with upfront Major source usage up to date
+ - Internal Documentation Updated 
+ - 
 
 
 
@@ -22,11 +24,11 @@ https://youtu.be/fxaDBE71UHA - Grid Inventory
 
 https://youtu.be/dulosHPl82A - Grid Building
 
-
 https://github.com/bryangalani/Unity_TetrisInventory 
 - Tetris movement in a Single Inventory, did not have a tutorial so
 I learned based off of his code myself. This tied all of CodeMonkeys 
-Teachings together
+Teachings together as well as give me an idea of how to put the mentality
+to code.
 
 
 He has links to the actual code that he used in his descriptions and I have linked
